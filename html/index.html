@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Custom Livery Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="hidden">
+        <div class="modal">
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <div class="badge-admin">PAINEL DE ADMINISTRADOR</div>
+                <h2>CUSTOM LIVERY STUDIO</h2>
+                <p class="subtitle">Edição em Tempo Real no Veículo 3D • Skyline GT-R R34</p>
+                <button id="btnClose" class="close-btn">&times;</button>
+            </div>
+
+            <div class="modal-content">
+                <!-- Informações do Veículo -->
+                <div class="vehicle-info-bar">
+                    <div class="info-item">
+                        <span class="label">VEÍCULO</span>
+                        <span id="vehName" class="value">Nissan Skyline GT-R R34</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">PLACA</span>
+                        <span id="vehPlate" class="value badge-plate">ADMIN01</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">MODO AO VIVO</span>
+                        <span class="value" style="color:#10b981;">3D LIVE ON</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Câmera 3D em Tempo Real -->
+                <div class="cam-bar">
+                    <div class="cam-header">
+                        <span class="cam-title">🎥 CÂMERA 3D NO CARRO:</span>
+                        <small class="cam-hint">Muda a visão do veículo em tempo real</small>
+                    </div>
+                    <div class="cam-buttons">
+                        <button type="button" class="btn-cam active" data-cam="teto">🚗 Teto</button>
+                        <button type="button" class="btn-cam" data-cam="capo">🏎️ Capô</button>
+                        <button type="button" class="btn-cam" data-cam="porta_esquerda">⬅️ Lado Esq.</button>
+                        <button type="button" class="btn-cam" data-cam="porta_direita">➡️ Lado Dir.</button>
+                        <button type="button" class="btn-cam" data-cam="porta_malas">🔙 Traseira</button>
+                        <button type="button" class="btn-cam" data-cam="geral">🌐 Visão 3D</button>
+                    </div>
+                </div>
+
+                <!-- Painel de Controles -->
+                <div class="grid-layout">
+                    <div class="controls-col">
+                        <!-- Selecionar Peça / Posição -->
+                        <div class="form-group">
+                            <label for="zoneSelect">Local da Estampa na Carroceria</label>
+                            <select id="zoneSelect">
+                                <option value="teto">Teto</option>
+                                <option value="capo">Capô Dianteiro</option>
+                                <option value="porta_esquerda">Lateral / Porta Esquerda</option>
+                                <option value="porta_direita">Lateral / Porta Direita</option>
+                                <option value="porta_malas">Porta-Malas / Traseira</option>
+                                <option value="parachoque_dianteiro">Para-choque Dianteiro</option>
+                                <option value="completo">Wrap Completo (Carro Inteiro)</option>
+                            </select>
+                            <div class="zone-quick-pills" id="zonePills">
+                                <button type="button" class="pill-btn active" data-zone="teto">Teto</button>
+                                <button type="button" class="pill-btn" data-zone="capo">Capô</button>
+                                <button type="button" class="pill-btn" data-zone="porta_esquerda">Porta Esq.</button>
+                                <button type="button" class="pill-btn" data-zone="porta_direita">Porta Dir.</button>
+                                <button type="button" class="pill-btn" data-zone="porta_malas">Traseira</button>
+                                <button type="button" class="pill-btn" data-zone="completo">Completo</button>
+                            </div>
+                        </div>
+
+                        <!-- Opção 1: Link da Imagem -->
+                        <div class="form-group">
+                            <label for="imgUrl">Link da Imagem (URL) ou Cole com CTRL+V</label>
+                            <input type="text" id="imgUrl" placeholder="Cole o link da foto (Imgur, Discord, Web...)">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                                <small class="hint">Copie qualquer imagem e aperte <b>CTRL + V</b> aqui!</small>
+                                <button type="button" id="btnSample" class="btn-sample">⚡ Imagem de Teste</button>
+                            </div>
+                        </div>
+
+                        <!-- Caixa de Instrução de Colar com CTRL+V -->
+                        <div class="form-group">
+                            <label>Ou Cole Direto do Computador / Google</label>
+                            <div class="file-dropzone" id="dropzone">
+                                <span id="dropzoneText">📋 Copie qualquer foto no seu PC e aperte <b>CTRL + V</b> nesta tela!</span>
+                            </div>
+                        </div>
+
+                        <!-- Cor de Fundo da Pintura Base -->
+                        <div class="form-group">
+                            <label for="baseColor">Cor de Fundo da Carroceria</label>
+                            <div class="color-picker-row">
+                                <input type="color" id="baseColor" value="#0d0d11">
+                                <span id="colorHex">#0d0d11</span>
+                            </div>
+                        </div>
+
+                        <!-- Painel de Ajuste de Posição & Rotação -->
+                        <div class="transform-panel">
+                            <div class="transform-panel-header">
+                                <span>Ajustes de Posição & Rotação (Ao Vivo no Carro 3D)</span>
+                                <button type="button" id="btnResetTransform" class="btn-xs">🔄 Centralizar</button>
+                            </div>
+
+                            <!-- Controle de Rotação -->
+                            <div class="control-row">
+                                <div class="control-label">
+                                    <span>Girar / Rotação</span>
+                                    <span id="rotVal" class="val-badge">0°</span>
+                                </div>
+                                <input type="range" id="rotRange" min="-180" max="180" value="0" step="1">
+                                <div class="quick-btns">
+                                    <button type="button" class="btn-tool" id="btnRotMinus90">↺ -90°</button>
+                                    <button type="button" class="btn-tool" id="btnRotPlus90">↻ +90°</button>
+                                    <button type="button" class="btn-tool" id="btnRot180">180°</button>
+                                    <button type="button" class="btn-tool" id="btnRotZero">0°</button>
+                                </div>
+                            </div>
+
+                            <!-- Controle de Escala / Tamanho -->
+                            <div class="control-row">
+                                <div class="control-label">
+                                    <span>Tamanho / Escala</span>
+                                    <span id="scaleVal" class="val-badge">100%</span>
+                                </div>
+                                <input type="range" id="scaleRange" min="10" max="300" value="100" step="5">
+                                <div class="quick-btns">
+                                    <button type="button" class="btn-tool" id="btnScaleDown">➖ Menor</button>
+                                    <button type="button" class="btn-tool" id="btnScaleUp">➕ Maior</button>
+                                    <button type="button" class="btn-tool" id="btnScale100">100%</button>
+                                    <button type="button" class="btn-tool" id="btnFlipH">⇄ Inverter</button>
+                                </div>
+                            </div>
+
+                            <!-- Controle de Posição (X e Y) -->
+                            <div class="control-row">
+                                <div class="control-label">
+                                    <span>Posição (ou arraste na prévia)</span>
+                                    <span id="posVal" class="val-badge">X: 0 | Y: 0</span>
+                                </div>
+                                <div class="dpad-container">
+                                    <div class="dpad-grid">
+                                        <div></div>
+                                        <button type="button" class="btn-dpad" id="btnMoveUp" title="Mover para Cima">▲</button>
+                                        <div></div>
+                                        <button type="button" class="btn-dpad" id="btnMoveLeft" title="Mover para Esquerda">◀</button>
+                                        <button type="button" class="btn-dpad btn-dpad-center" id="btnCenterPos" title="Centralizar">🎯</button>
+                                        <button type="button" class="btn-dpad" id="btnMoveRight" title="Mover para Direita">▶</button>
+                                        <div></div>
+                                        <button type="button" class="btn-dpad" id="btnMoveDown" title="Mover para Baixo">▼</button>
+                                        <div></div>
+                                    </div>
+                                    <div class="sliders-subcol">
+                                        <div class="mini-slider">
+                                            <span>X:</span>
+                                            <input type="range" id="posXRange" min="-800" max="800" value="0" step="5">
+                                        </div>
+                                        <div class="mini-slider">
+                                            <span>Y:</span>
+                                            <input type="range" id="posYRange" min="-800" max="800" value="0" step="5">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Ação -->
+                        <div class="actions-group">
+                            <button id="btnRemove" class="btn btn-danger">Remover Estampa</button>
+                            <button id="btnApply" class="btn btn-primary">Salvar no Carro (Definitivo)</button>
+                        </div>
+                    </div>
+
+                    <!-- Coluna de Prévia do Mapa UV com Molde 2D do Carro -->
+                    <div class="preview-col">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                <span>MOLDE 2D • GUIA DE POSIÇÃO</span>
+                                <span class="blueprint-badge" id="blueprintBadge">MOLDE ATIVO</span>
+                            </div>
+                            <div class="blueprint-controls">
+                                <button type="button" id="btnToggleBlueprint" class="btn-blueprint-toggle active" title="Ligar/Desligar linhas do molde">👁️ Molde 2D</button>
+                            </div>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="uvCanvas" width="2048" height="2048"></canvas>
+                        </div>
+                        <div class="preview-footer">
+                            <div class="blueprint-opacity-row">
+                                <span>Visibilidade do Molde:</span>
+                                <input type="range" id="blueprintOpacity" min="15" max="100" value="75">
+                                <span id="opacityVal">75%</span>
+                            </div>
+                            <small>💡 <b>AO VIVO NO JOGO:</b> Conforme você mexe nos sliders ou arrasta o mouse, a estampa se move NO CARRO 3D em tempo real!</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

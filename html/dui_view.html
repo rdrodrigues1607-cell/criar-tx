@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        body, html {
+            width: 2048px;
+            height: 2048px;
+            background: transparent;
+        }
+        #livery {
+            width: 2048px;
+            height: 2048px;
+            object-fit: fill;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <img id="livery" src="" />
+    <script>
+        const img = document.getElementById('livery');
+
+        function setSource(src) {
+            if (!src || img.src === src) return;
+            img.src = src;
+        }
+
+        window.addEventListener('message', function(event) {
+            let data = event.data;
+            if (typeof data === 'string') {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (parsed && parsed.image) {
+                        setSource(parsed.image);
+                        return;
+                    }
+                } catch(e) {}
+
+                if (data.startsWith('data:') || data.startsWith('http')) {
+                    setSource(data);
+                    return;
+                }
+            } else if (data && data.image) {
+                setSource(data.image);
+            }
+        });
+
+        // Suporte a carregamento por URL query param (?url=...)
+        const params = new URLSearchParams(window.location.search);
+        const url = params.get('url');
+        if (url) {
+            setSource(decodeURIComponent(url));
+        }
+    </script>
+</body>
+</html>
